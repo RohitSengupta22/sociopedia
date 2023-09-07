@@ -9,8 +9,11 @@ import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 import { register } from "./controllers/auth.js";
-import router from "./routes/auth.js";
-
+import authRouter from "./routes/auth.js";
+import userRouter from "./routes/users.js";
+import postRoutes from "./routes/posts.js";
+import { verifyToken } from "./middlewares/auth.js";
+import {createPost} from "./controllers/posts.js";
 //configurations
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
@@ -44,7 +47,10 @@ const upload = multer({ storage: storage })
 
 //Routes
 app.post('/auth/register', upload.single("picture"), register)
-app.use('/auth',router)
+app.post('/posts',verifyToken, upload.single("picture"), createPost)
+app.use('/auth',authRouter)
+app.use('/users',userRouter)
+app.use('/posts',postRoutes)
 
 //Mongoose setup
 
